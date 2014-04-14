@@ -28,3 +28,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+Disclaimer
+==========
+
+MP3 encoding/decoding technology may be governed by MP3 patents in some countries.
+
+For the purpose of this project, only an external MP3 library was used namely libmp3lame.js, that was not developed by
+me.
