@@ -4,6 +4,10 @@
   var encoderWorker = new Worker('js/mp3Worker.js');
   var audio_context, source;
 
+  var __log = function(e, data) {
+    log.innerHTML += "\n" + e + " " + (data || '');
+  }
+
   var Recorder = function(cfg){
 	var config = cfg || {};
 	var bufferLen = config.bufferLen || 4096;
