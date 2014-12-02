@@ -2,11 +2,15 @@
 
   var WORKER_PATH = 'js/recorderWorker.js';
   var encoderWorker = new Worker('js/mp3Worker.js');
-  var audio_context;
+  var audio_context, source;
 
-  var Recorder = function(source, cfg){
+  var Recorder = function(cfg){
 	var config = cfg || {};
 	var bufferLen = config.bufferLen || 4096;
+	if (!config.element) {
+		__log('No element specified.  Cannot initialise recorder.');
+		return;
+	}
 	this.context = source.context;
 	this.node = (this.context.createScriptProcessor ||
 				 this.context.createJavaScriptNode).call(this.context,
@@ -197,7 +201,39 @@
 
 	source.connect(this.node);
 	this.node.connect(this.context.destination);    //this should not be necessary
-	};
+
+	// Build interface.
+	__log('Building interface...');
+	var btnRecord = document.createElement('button');
+	var btnStop = document.createElement('button');
+	var self = this;
+	btnRecord.onclick = function() {
+		self.record();
+		btnRecord.disabled = true;
+		btnStop.disabled = false;
+		__log('Recording...');
+	}
+	btnStop.onclick = function() {
+		self.stop();
+		btnStop.disabled = true;
+		btnRecord.disabled = false;
+		__log('Stopped recording.');
+
+		// create WAV download link using audio data blob
+		self.exportWAV(function(blob){});
+
+		self.clear();
+	}
+	btnRecord.innerHTML = 'record';
+	btnStop.innerHTML = 'stop';
+	btnStop.disabled = true;
+	config.element.appendChild(btnRecord);
+	config.element.appendChild(btnStop);
+	__log('Interface built.');
+
+	return this;
+	__log('Recorder initialised.');
+  };
 
 	/*Recorder.forceDownload = function(blob, filename){
 		console.log("Force download");
@@ -235,15 +271,14 @@
 	}
 
 	var startUserMedia = function(stream) {
-		var input = audio_context.createMediaStreamSource(stream);
+		var recorders = document.querySelectorAll('.RecordMP3js-recorder');
+		source = audio_context.createMediaStreamSource(stream);
 		__log('Media stream created.' );
-		__log("input sample rate " +input.context.sampleRate);
+		__log("input sample rate " +source.context.sampleRate);
 
-		input.connect(audio_context.destination);
-		__log('Input connected to audio context destination.');
-
-		recorder = new Recorder(input);
-		__log('Recorder initialised.');
+		for(var i=0; i<recorders.length; i++) {
+			recorders[i].recorder = new Recorder({element: recorders[i]});
+		}
 	}
 
 	if (window.addEventListener) {
