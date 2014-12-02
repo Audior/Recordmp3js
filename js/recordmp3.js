@@ -2,73 +2,74 @@
 
   var WORKER_PATH = 'js/recorderWorker.js';
   var encoderWorker = new Worker('js/mp3Worker.js');
+  var audio_context;
 
   var Recorder = function(source, cfg){
-    var config = cfg || {};
-    var bufferLen = config.bufferLen || 4096;
-    this.context = source.context;
-    this.node = (this.context.createScriptProcessor ||
-                 this.context.createJavaScriptNode).call(this.context,
-                                                         bufferLen, 2, 2);
-    var worker = new Worker(config.workerPath || WORKER_PATH);
-    worker.postMessage({
-      command: 'init',
-      config: {
-        sampleRate: this.context.sampleRate
-      }
-    });
-    var recording = false,
-      currCallback;
+	var config = cfg || {};
+	var bufferLen = config.bufferLen || 4096;
+	this.context = source.context;
+	this.node = (this.context.createScriptProcessor ||
+				 this.context.createJavaScriptNode).call(this.context,
+														 bufferLen, 2, 2);
+	var worker = new Worker(config.workerPath || WORKER_PATH);
+	worker.postMessage({
+	  command: 'init',
+	  config: {
+		sampleRate: this.context.sampleRate
+	  }
+	});
+	var recording = false,
+	  currCallback;
 
-    this.node.onaudioprocess = function(e){
-      if (!recording) return;
-      worker.postMessage({
-        command: 'record',
-        buffer: [
-          e.inputBuffer.getChannelData(0),
-          //e.inputBuffer.getChannelData(1)
-        ]
-      });
-    }
+	this.node.onaudioprocess = function(e){
+	  if (!recording) return;
+	  worker.postMessage({
+		command: 'record',
+		buffer: [
+		  e.inputBuffer.getChannelData(0),
+		  //e.inputBuffer.getChannelData(1)
+		]
+	  });
+	}
 
-    this.configure = function(cfg){
-      for (var prop in cfg){
-        if (cfg.hasOwnProperty(prop)){
-          config[prop] = cfg[prop];
-        }
-      }
-    }
+	this.configure = function(cfg){
+	  for (var prop in cfg){
+		if (cfg.hasOwnProperty(prop)){
+		  config[prop] = cfg[prop];
+		}
+	  }
+	}
 
-    this.record = function(){
-      recording = true;
-    }
+	this.record = function(){
+	  recording = true;
+	}
 
-    this.stop = function(){
-      recording = false;
-    }
+	this.stop = function(){
+	  recording = false;
+	}
 
-    this.clear = function(){
-      worker.postMessage({ command: 'clear' });
-    }
+	this.clear = function(){
+	  worker.postMessage({ command: 'clear' });
+	}
 
-    this.getBuffer = function(cb) {
-      currCallback = cb || config.callback;
-      worker.postMessage({ command: 'getBuffer' })
-    }
+	this.getBuffer = function(cb) {
+	  currCallback = cb || config.callback;
+	  worker.postMessage({ command: 'getBuffer' })
+	}
 
-    this.exportWAV = function(cb, type){
-      currCallback = cb || config.callback;
-      type = type || config.type || 'audio/wav';
-      if (!currCallback) throw new Error('Callback not set');
-      worker.postMessage({
-        command: 'exportWAV',
-        type: type
-      });
-    }
+	this.exportWAV = function(cb, type){
+	  currCallback = cb || config.callback;
+	  type = type || config.type || 'audio/wav';
+	  if (!currCallback) throw new Error('Callback not set');
+	  worker.postMessage({
+		command: 'exportWAV',
+		type: type
+	  });
+	}
 
 	//Mp3 conversion
-    worker.onmessage = function(e){
-      var blob = e.data;
+	worker.onmessage = function(e){
+	  var blob = e.data;
 	  //console.log("the blob " +  blob + " " + blob.size + " " + blob.type);
 
 	  var arrayBuffer;
@@ -77,23 +78,23 @@
 	  fileReader.onload = function(){
 		arrayBuffer = this.result;
 		var buffer = new Uint8Array(arrayBuffer),
-        data = parseWav(buffer);
+		data = parseWav(buffer);
 
-        console.log(data);
+		console.log(data);
 		console.log("Converting to Mp3");
 		log.innerHTML += "\n" + "Converting to Mp3";
 
-        encoderWorker.postMessage({ cmd: 'init', config:{
-            mode : 3,
+		encoderWorker.postMessage({ cmd: 'init', config:{
+			mode : 3,
 			channels:1,
 			samplerate: data.sampleRate,
 			bitrate: data.bitsPerSample
-        }});
+		}});
 
-        encoderWorker.postMessage({ cmd: 'encode', buf: Uint8ArrayToFloat32Array(data.samples) });
-        encoderWorker.postMessage({ cmd: 'finish'});
-        encoderWorker.onmessage = function(e) {
-            if (e.data.cmd == 'data') {
+		encoderWorker.postMessage({ cmd: 'encode', buf: Uint8ArrayToFloat32Array(data.samples) });
+		encoderWorker.postMessage({ cmd: 'finish'});
+		encoderWorker.onmessage = function(e) {
+			if (e.data.cmd == 'data') {
 
 				console.log("Done converting to Mp3");
 				log.innerHTML += "\n" + "Done converting to Mp3";
@@ -121,14 +122,14 @@
 				li.appendChild(hf);
 				recordingslist.appendChild(li);
 
-            }
-        };
+			}
+		};
 	  };
 
 	  fileReader.readAsArrayBuffer(blob);
 
-      currCallback(blob);
-    }
+	  currCallback(blob);
+	}
 
 
 	function encode64(buffer) {
@@ -194,21 +195,61 @@
 		reader.readAsDataURL(mp3Data);
 	}
 
-    source.connect(this.node);
-    this.node.connect(this.context.destination);    //this should not be necessary
-  };
+	source.connect(this.node);
+	this.node.connect(this.context.destination);    //this should not be necessary
+	};
 
-  /*Recorder.forceDownload = function(blob, filename){
-	console.log("Force download");
-    var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    var link = window.document.createElement('a');
-    link.href = url;
-    link.download = filename || 'output.wav';
-    var click = document.createEvent("Event");
-    click.initEvent("click", true, true);
-    link.dispatchEvent(click);
-  }*/
+	/*Recorder.forceDownload = function(blob, filename){
+		console.log("Force download");
+		var url = (window.URL || window.webkitURL).createObjectURL(blob);
+		var link = window.document.createElement('a');
+		link.href = url;
+		link.download = filename || 'output.wav';
+		var click = document.createEvent("Event");
+		click.initEvent("click", true, true);
+		link.dispatchEvent(click);
+	}*/
 
-  window.Recorder = Recorder;
+	window.Recorder = Recorder;
+
+	var initRecorder = function() {
+		try {
+			// webkit shim
+			window.AudioContext = window.AudioContext || window.webkitAudioContext;
+			navigator.getUserMedia = ( navigator.getUserMedia ||
+					navigator.webkitGetUserMedia ||
+					navigator.mozGetUserMedia ||
+					navigator.msGetUserMedia);
+			window.URL = window.URL || window.webkitURL;
+
+			audio_context = new AudioContext;
+			__log('Audio context set up.');
+			__log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
+		} catch (e) {
+			alert('No web audio support in this browser!');
+		}
+
+		navigator.getUserMedia({audio: true}, startUserMedia, function(e) {
+			__log('No live audio input: ' + e);
+		});
+	}
+
+	var startUserMedia = function(stream) {
+		var input = audio_context.createMediaStreamSource(stream);
+		__log('Media stream created.' );
+		__log("input sample rate " +input.context.sampleRate);
+
+		input.connect(audio_context.destination);
+		__log('Input connected to audio context destination.');
+
+		recorder = new Recorder(input);
+		__log('Recorder initialised.');
+	}
+
+	if (window.addEventListener) {
+		window.addEventListener('load', initRecorder, false);
+	} else if (window.attachEvent) {
+		window.attachEvent('onload', initRecorder);
+	}
 
 })(window);
