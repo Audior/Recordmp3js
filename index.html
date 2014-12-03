@@ -52,7 +52,7 @@
       xhr.open('POST', 'upload.php', true);
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
-          log.innerHTML += "\n" + e + " " + (data || '');
+          log.innerHTML += "\nMP3 uploaded.";
         }
       };
       xhr.send(fd);
