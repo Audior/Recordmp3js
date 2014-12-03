@@ -15,6 +15,7 @@
     var btnPlay = document.createElement('button');
     var btnRecord = document.createElement('button');
     var btnStop = document.createElement('button');
+    var btnSave = document.createElement('button');
     if (!config.element) {
       __log('No element specified.  Cannot initialise recorder.');
       return;
@@ -92,6 +93,7 @@
       }
       btnStop.disabled = true;
       btnRecord.disabled = false;
+      btnSave.disabled = false;
     }
 
     this.stopRecording = function(){
@@ -125,6 +127,15 @@
       }
     }
 
+    this.save = function(){
+      if (self.outputFormat === 'mp3') {
+        self.convertToMP3();
+      } else {
+        // Assume WAV.
+        window[self.callback](self.audioData);
+      }
+    }
+
     this.clear = function(){
       worker.postMessage({ command: 'clear' });
     }
@@ -146,12 +157,6 @@
       var blob = e.data;
       self.audioData = blob;
       btnPlay.disabled = false;
-      if (self.outputFormat === 'mp3') {
-        self.convertToMP3();
-      } else {
-        // Assume WAV.
-        window[self.callback](blob);
-      }
     }
 
     this.convertToMP3 = function() {
@@ -272,9 +277,14 @@
     btnPlay.className = 'btn-play';
     btnPlay.innerHTML = 'play';
     btnPlay.disabled = true;
+    btnSave.onclick = this.save;
+    btnSave.className = 'btn-save';
+    btnSave.innerHTML = 'save';
+    btnSave.disabled = true;
     config.element.appendChild(btnPlay);
     config.element.appendChild(btnRecord);
     config.element.appendChild(btnStop);
+    config.element.appendChild(btnSave);
     __log('Interface built.');
 
     return this;
