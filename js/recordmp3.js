@@ -12,6 +12,7 @@
 	var config = cfg || {};
 	var bufferLen = config.bufferLen || 4096;
 	var self = this;
+	var btnPlay = document.createElement('button');
 	var btnRecord = document.createElement('button');
 	var btnStop = document.createElement('button');
 	if (!config.element) {
@@ -25,6 +26,8 @@
 	this.node = (this.context.createScriptProcessor ||
 				 this.context.createJavaScriptNode).call(this.context,
 														 bufferLen, 2, 2);
+	this.audio = null;
+	this.playing = false;
 	var worker = new Worker(config.workerPath || WORKER_PATH);
 	worker.postMessage({
 	  command: 'init',
@@ -60,7 +63,9 @@
 		}
 		self.record();
 		btnStop.disabled = false;
+		btnPlay.disabled = true;
 		config.element.className += ' recording';
+		self.audio = null;
 		__log('Recording...');
 	}
 
@@ -69,19 +74,55 @@
 	}
 
 	this.stop = function() {
-		self.stopRecording();
+		if (self.playing) {
+			self.audio.pause();
+			self.audio.currentTime = 0;
+			self.playing = false;
+			btnPlay.className = 'btn-play';
+			btnPlay.innerHTML = 'play';
+		} else {
+			self.stopRecording();
+			config.element.className = config.element.className.replace(' recording', '');
+			__log('Stopped recording.');
+
+			// create WAV download link using audio data blob
+			self.exportWAV();
+
+			self.clear();
+		}
 		btnStop.disabled = true;
-		config.element.className = config.element.className.replace(' recording', '');
-		__log('Stopped recording.');
-
-		// create WAV download link using audio data blob
-		self.exportWAV();
-
-		self.clear();
+		btnRecord.disabled = false;
 	}
 
 	this.stopRecording = function(){
 	  recording = false;
+	}
+
+	this.play = function() {
+		if (self.playing) {
+			self.audio.pause();
+			self.playing = false;
+			btnStop.disabled = true;
+			btnRecord.disabled = false;
+			btnPlay.className = 'btn-play';
+			btnPlay.innerHTML = 'play';
+		} else {
+			if (self.audio === null) {
+				var reader = new FileReader();
+				reader.onload = function(event) {
+					self.audio = new Audio(event.target.result);
+					self.play();
+				};
+	    		reader.readAsDataURL(self.audioData);
+			} else {
+				self.audio.play();
+				self.playing = true;
+				btnStop.disabled = false;
+				btnRecord.disabled = true;
+				btnPlay.className = 'btn-pause';
+				btnPlay.innerHTML = 'pause';
+			}
+		}
 	}
 
 	this.clear = function(){
@@ -104,6 +145,7 @@
 	worker.onmessage = function(e){
 	  var blob = e.data;
 	  self.audioData = blob;
+	  btnPlay.disabled = false;
 	  if (self.outputFormat === 'mp3') {
 	  	self.convertToMP3();
 	  } else {
@@ -226,6 +268,11 @@
 	btnStop.className = 'btn-stop';
 	btnStop.innerHTML = 'stop';
 	btnStop.disabled = true;
+	btnPlay.onclick = this.play;
+	btnPlay.className = 'btn-play';
+	btnPlay.innerHTML = 'play';
+	btnPlay.disabled = true;
+	config.element.appendChild(btnPlay);
 	config.element.appendChild(btnRecord);
 	config.element.appendChild(btnStop);
 	__log('Interface built.');
