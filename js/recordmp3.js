@@ -11,6 +11,9 @@
   var Recorder = function(cfg){
 	var config = cfg || {};
 	var bufferLen = config.bufferLen || 4096;
+	var self = this;
+	var btnRecord = document.createElement('button');
+	var btnStop = document.createElement('button');
 	if (!config.element) {
 		__log('No element specified.  Cannot initialise recorder.');
 		return;
@@ -48,11 +51,33 @@
 	  }
 	}
 
+	this.toggleRecording = function() {
+		if (recording) {
+			return self.stop();
+		}
+		self.record();
+		btnStop.disabled = false;
+		config.element.className += ' recording';
+		__log('Recording...');
+	}
+
 	this.record = function(){
 	  recording = true;
 	}
 
-	this.stop = function(){
+	this.stop = function() {
+		self.stopRecording();
+		btnStop.disabled = true;
+		config.element.className = config.element.className.replace(' recording', '');
+		__log('Stopped recording.');
+
+		// create WAV download link using audio data blob
+		self.exportWAV(function(blob){});
+
+		self.clear();
+	}
+
+	this.stopRecording = function(){
 	  recording = false;
 	}
 
@@ -208,27 +233,11 @@
 
 	// Build interface.
 	__log('Building interface...');
-	var btnRecord = document.createElement('button');
-	var btnStop = document.createElement('button');
-	var self = this;
-	btnRecord.onclick = function() {
-		self.record();
-		btnRecord.disabled = true;
-		btnStop.disabled = false;
-		__log('Recording...');
-	}
-	btnStop.onclick = function() {
-		self.stop();
-		btnStop.disabled = true;
-		btnRecord.disabled = false;
-		__log('Stopped recording.');
-
-		// create WAV download link using audio data blob
-		self.exportWAV(function(blob){});
-
-		self.clear();
-	}
+	btnRecord.onclick = this.toggleRecording;
+	btnRecord.className = 'btn-record'
 	btnRecord.innerHTML = 'record';
+	btnStop.onclick = this.stop;
+	btnStop.className = 'btn-stop';
 	btnStop.innerHTML = 'stop';
 	btnStop.disabled = true;
 	config.element.appendChild(btnRecord);
