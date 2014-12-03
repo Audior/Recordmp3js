@@ -1,9 +1,25 @@
-@import '//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css';
-@import '//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css';
-
+.RecordMP3js-recorder {
+  width:200px;
+  display:inline-block;
+  border-radius:5px;
+  margin:5px 10px;
+  border:1px solid #999;
+  background-color: #ddd;
+}
 .RecordMP3js-recorder .btn-record {
-  color: #f00;
+  color:#f00;
 }
 .RecordMP3js-recorder.recording .btn-record {
-  color: #666;
+  color:#666;
+}
+.RecordMP3js-recorder button {
+  margin:0;
+  width:25%;
+  border-radius:0;
+  background:none;
+  border:0 none;
+  border-left:1px solid #999;
+}
+.RecordMP3js-recorder button:first-child {
+  border-left:0px none;
 }
