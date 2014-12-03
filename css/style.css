@@ -2,8 +2,8 @@
 @import '//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css';
 
 .RecordMP3js-recorder .btn-record {
-	color: #f00;
+  color: #f00;
 }
 .RecordMP3js-recorder.recording .btn-record {
-	color: #666;
+  color: #666;
 }
