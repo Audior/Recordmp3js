@@ -47,11 +47,11 @@
       if (!recording) return;
 
       worker.postMessage({
-      command: 'record',
-      buffer: [
-        e.inputBuffer.getChannelData(0),
-        //e.inputBuffer.getChannelData(1)
-      ]
+        command: 'record',
+        buffer: [
+          e.inputBuffer.getChannelData(0),
+          //e.inputBuffer.getChannelData(1)
+        ]
       });
 
       // VU Meter.
@@ -70,9 +70,9 @@
 
     this.configure = function(cfg){
       for (var prop in cfg){
-      if (cfg.hasOwnProperty(prop)){
-        config[prop] = cfg[prop];
-      }
+        if (cfg.hasOwnProperty(prop)){
+          config[prop] = cfg[prop];
+        }
       }
     }
 
@@ -182,34 +182,34 @@
       var fileReader = new FileReader();
 
       fileReader.onload = function(){
-      arrayBuffer = this.result;
-      var buffer = new Uint8Array(arrayBuffer),
-      data = parseWav(buffer);
+        arrayBuffer = this.result;
+        var buffer = new Uint8Array(arrayBuffer),
+        data = parseWav(buffer);
 
-      console.log(data);
-      console.log("Converting to Mp3");
-      log.innerHTML += "\n" + "Converting to Mp3";
+        console.log(data);
+        console.log("Converting to Mp3");
+        log.innerHTML += "\n" + "Converting to Mp3";
 
-      encoderWorker.postMessage({ cmd: 'init', config:{
-        mode : 3,
-        channels:1,
-        samplerate: data.sampleRate,
-        bitrate: data.bitsPerSample
-      }});
+        encoderWorker.postMessage({ cmd: 'init', config:{
+          mode : 3,
+          channels:1,
+          samplerate: data.sampleRate,
+          bitrate: data.bitsPerSample
+        }});
 
-      encoderWorker.postMessage({ cmd: 'encode', buf: Uint8ArrayToFloat32Array(data.samples) });
-      encoderWorker.postMessage({ cmd: 'finish'});
-      encoderWorker.onmessage = function(e) {
-        if (e.data.cmd == 'data') {
+        encoderWorker.postMessage({ cmd: 'encode', buf: Uint8ArrayToFloat32Array(data.samples) });
+        encoderWorker.postMessage({ cmd: 'finish'});
+        encoderWorker.onmessage = function(e) {
+          if (e.data.cmd == 'data') {
 
-          console.log("Done converting to Mp3");
-          log.innerHTML += "\n" + "Done converting to Mp3";
+            console.log("Done converting to Mp3");
+            log.innerHTML += "\n" + "Done converting to Mp3";
 
-          var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
-          window[self.callback](mp3Blob);
+            var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
+            window[self.callback](mp3Blob);
 
-        }
-      };
+          }
+        };
       };
 
       fileReader.readAsArrayBuffer(this.audioData);
