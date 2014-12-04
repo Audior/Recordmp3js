@@ -20,6 +20,7 @@
       __log('No element specified.  Cannot initialise recorder.');
       return;
     }
+    this.vumeter = null;
     this.outputFormat = config.format || config.element.getAttribute('data-format') || 'wav';
     this.callback = config.callback || config.element.getAttribute('data-callback') || 'console.log';
     this.audioData = null;
@@ -27,6 +28,9 @@
     this.node = (this.context.createScriptProcessor ||
            this.context.createJavaScriptNode).call(this.context,
                                bufferLen, 2, 2);
+    this.analyser = this.context.createAnalyser();
+    this.analyser.smoothingTimeConstant = 0.3;
+    this.analyser.fftSize = 1024;
     this.audio = null;
     this.playing = false;
     var worker = new Worker(config.workerPath || WORKER_PATH);
@@ -41,6 +45,7 @@
 
     this.node.onaudioprocess = function(e){
       if (!recording) return;
+
       worker.postMessage({
       command: 'record',
       buffer: [
@@ -48,6 +53,19 @@
         //e.inputBuffer.getChannelData(1)
       ]
       });
+
+      // VU Meter.
+      var array =  new Uint8Array(self.analyser.frequencyBinCount);
+      self.analyser.getByteFrequencyData(array);
+      var values = 0;
+
+      var length = array.length;
+      for (var i = 0; i < length; i++) {
+          values += array[i];
+      }
+
+      var average = values / length;
+      self.vumeter.style.width = Math.min(parseInt(average*2),100)+'%';
     }
 
     this.configure = function(cfg){
@@ -261,14 +279,15 @@
       reader.readAsDataURL(mp3Data);
     }
 
-    source.connect(this.node);
-    this.node.connect(this.context.destination);    //this should not be necessary
+    source.connect(this.analyser);
+    this.analyser.connect(this.node);
+    this.node.connect(this.context.destination);
 
     // Build interface.
     __log('Building interface...');
     btnRecord.onclick = this.toggleRecording;
     btnRecord.className = 'btn-record'
-    btnRecord.innerHTML = '<span class="icon-record"></span>';
+    btnRecord.innerHTML = '<span class="vumeter"></span><span class="icon-record"></span>';
     btnStop.onclick = this.stop;
     btnStop.className = 'btn-stop';
     btnStop.innerHTML = '<span class="icon-stop"></span>';
@@ -285,6 +304,7 @@
     config.element.appendChild(btnRecord);
     config.element.appendChild(btnStop);
     config.element.appendChild(btnSave);
+    this.vumeter = config.element.querySelector('.btn-record .vumeter');
     __log('Interface built.');
 
     return this;

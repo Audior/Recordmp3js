@@ -73,5 +73,18 @@
   color:#D66;
 }
 .RecordMP3js-recorder.recording button.btn-record {
-  color:#900;
+  color:#B00;
+  position:relative;
+}
+.RecordMP3js-recorder.recording button.btn-record .vumeter {
+  position:absolute;
+  display:block;
+  top:0;
+  left:0;
+  height:100%;
+  background-color:#5BC539;
+  transition:width 0.08s linear;
+}
+.RecordMP3js-recorder.recording button.btn-record .icon-record {
+  opacity:0.99;
 }
