@@ -80,7 +80,7 @@
         self.audio.currentTime = 0;
         self.playing = false;
         btnPlay.className = 'btn-play';
-        btnPlay.innerHTML = 'play';
+        btnPlay.innerHTML = '<span class="icon-play"></span>';
       } else {
         self.stopRecording();
         config.element.className = config.element.className.replace(' recording', '');
@@ -107,7 +107,7 @@
         btnStop.disabled = true;
         btnRecord.disabled = false;
         btnPlay.className = 'btn-play';
-        btnPlay.innerHTML = 'play';
+        btnPlay.innerHTML = '<span class="icon-play"></span>';
       } else {
         if (self.audio === null) {
           var reader = new FileReader();
@@ -122,7 +122,7 @@
           btnStop.disabled = false;
           btnRecord.disabled = true;
           btnPlay.className = 'btn-pause';
-          btnPlay.innerHTML = 'pause';
+          btnPlay.innerHTML = '<span class="icon-pause"></span>';
         }
       }
     }
@@ -268,18 +268,18 @@
     __log('Building interface...');
     btnRecord.onclick = this.toggleRecording;
     btnRecord.className = 'btn-record'
-    btnRecord.innerHTML = 'record';
+    btnRecord.innerHTML = '<span class="icon-record"></span>';
     btnStop.onclick = this.stop;
     btnStop.className = 'btn-stop';
-    btnStop.innerHTML = 'stop';
+    btnStop.innerHTML = '<span class="icon-stop"></span>';
     btnStop.disabled = true;
     btnPlay.onclick = this.play;
     btnPlay.className = 'btn-play';
-    btnPlay.innerHTML = 'play';
+    btnPlay.innerHTML = '<span class="icon-play"></span>';
     btnPlay.disabled = true;
     btnSave.onclick = this.save;
     btnSave.className = 'btn-save';
-    btnSave.innerHTML = 'save';
+    btnSave.innerHTML = '<span class="icon-upload"></span>';
     btnSave.disabled = true;
     config.element.appendChild(btnPlay);
     config.element.appendChild(btnRecord);
