@@ -100,7 +100,7 @@
         btnPlay.innerHTML = '<span class="icon-play"></span>';
       } else {
         self.stopRecording();
-        config.element.className = config.element.className.replace(' recording', '');
+        removeClass(config.element, 'recording');
         __log('Stopped recording.');
 
         // create WAV download link using audio data blob
@@ -145,6 +145,11 @@
     }
 
     this.save = function(){
+      btnPlay.disabled = true;
+      btnStop.disabled = true;
+      btnRecord.disabled = true;
+      btnSave.disabled = true;
+      config.element.className += ' processing';
       if (self.outputFormat === 'mp3') {
         self.convertToMP3();
       } else {
@@ -155,6 +160,9 @@
 
     this.clear = function(){
       worker.postMessage({ command: 'clear' });
+      initButtons();
+      removeClass(config.element, 'recording');
+      removeClass(config.element, 'processing');
     }
 
     this.getBuffer = function(cb) {
@@ -255,33 +263,44 @@
       return f32Buffer;
     }
 
+    function removeClass(el, name) {
+      el.className = el.className.replace(' '+name, '');
+    }
+
+    function buildInterface() {
+      __log('Building interface...');
+      initButtons();
+      config.element.appendChild(btnPlay);
+      config.element.appendChild(btnRecord);
+      config.element.appendChild(btnStop);
+      config.element.appendChild(btnSave);
+      self.vumeter = config.element.querySelector('.btn-record .vumeter');
+      __log('Interface built.');
+    }
+    function initButtons() {
+      btnRecord.onclick = self.toggleRecording;
+      btnRecord.className = 'btn-record'
+      btnRecord.innerHTML = '<span class="vumeter"></span><span class="icon-record"></span>';
+      btnRecord.disabled = false;
+      btnStop.onclick = self.stop;
+      btnStop.className = 'btn-stop';
+      btnStop.innerHTML = '<span class="icon-stop"></span>';
+      btnStop.disabled = true;
+      btnPlay.onclick = self.play;
+      btnPlay.className = 'btn-play';
+      btnPlay.innerHTML = '<span class="icon-play"></span>';
+      btnPlay.disabled = true;
+      btnSave.onclick = self.save;
+      btnSave.className = 'btn-save';
+      btnSave.innerHTML = '<span class="icon-upload"></span>';
+      btnSave.disabled = true;
+    }
+
     source.connect(this.analyser);
     this.analyser.connect(this.node);
     this.node.connect(this.context.destination);
 
-    // Build interface.
-    __log('Building interface...');
-    btnRecord.onclick = this.toggleRecording;
-    btnRecord.className = 'btn-record'
-    btnRecord.innerHTML = '<span class="vumeter"></span><span class="icon-record"></span>';
-    btnStop.onclick = this.stop;
-    btnStop.className = 'btn-stop';
-    btnStop.innerHTML = '<span class="icon-stop"></span>';
-    btnStop.disabled = true;
-    btnPlay.onclick = this.play;
-    btnPlay.className = 'btn-play';
-    btnPlay.innerHTML = '<span class="icon-play"></span>';
-    btnPlay.disabled = true;
-    btnSave.onclick = this.save;
-    btnSave.className = 'btn-save';
-    btnSave.innerHTML = '<span class="icon-upload"></span>';
-    btnSave.disabled = true;
-    config.element.appendChild(btnPlay);
-    config.element.appendChild(btnRecord);
-    config.element.appendChild(btnStop);
-    config.element.appendChild(btnSave);
-    this.vumeter = config.element.querySelector('.btn-record .vumeter');
-    __log('Interface built.');
+    buildInterface();
 
     return this;
     __log('Recorder initialised.');

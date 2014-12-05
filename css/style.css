@@ -41,6 +41,7 @@
 
 .RecordMP3js-recorder {
   width:200px;
+  height:24px;
   display:inline-block;
   margin:5px 10px;
 }
@@ -48,9 +49,11 @@
   color:#666;
   margin:0;
   width:25%;
+  height:24px;
   background:none #eee;
   border:1px solid #999;
   border-left-width:0;
+  position:relative;
 }
 .RecordMP3js-recorder button > span {
   line-height:1.5em;
@@ -66,6 +69,8 @@
   color:#999;
   background-color:#ddd;
 }
+
+/* Record button + VU Meter */
 .RecordMP3js-recorder button.btn-record {
   color:#D00;
 }
@@ -74,7 +79,6 @@
 }
 .RecordMP3js-recorder.recording button.btn-record {
   color:#B00;
-  position:relative;
 }
 .RecordMP3js-recorder.recording button.btn-record .vumeter {
   position:absolute;
@@ -87,4 +91,43 @@
 }
 .RecordMP3js-recorder.recording button.btn-record .icon-record {
   opacity:0.99;
+}
+
+/* Loading spinner for "Processing" state */
+.RecordMP3js-recorder.processing button.btn-save span:before {
+  visibility:hidden;
+}
+.RecordMP3js-recorder.processing button.btn-save:before {
+  display:block;
+  content:"";
+  position:absolute;
+  width:16px;
+  height:16px;
+  top:3px;
+  left:17px;
+  border-radius:50%;
+  border:3px solid #ccc;
+  border-top-color:#999;
+  -webkit-animation:RecordMP3js-spinner 1s infinite linear;
+  animation:RecordMP3js-spinner 1s infinite linear;
+}
+@-webkit-keyframes RecordMP3js-spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes RecordMP3js-spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }

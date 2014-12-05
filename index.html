@@ -55,6 +55,7 @@
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           log.innerHTML += "\nMP3 uploaded.";
+          recorder.clear();
         }
       };
       xhr.send(fd);
@@ -64,6 +65,7 @@
   }
   function logToConsole(recorder, data) {
     console.log(data);
+    recorder.clear();
   }
   </script>
   <script src="js/recordmp3.js"></script>
