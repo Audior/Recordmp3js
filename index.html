@@ -48,7 +48,7 @@
       li.appendChild(hf);
       recordingslist.appendChild(li);
 
-      console.log("mp3name = " + mp3Name);
+      log.innerHTML += "\nmp3name = " + mp3Name;
       fd.append('fname', encodeURIComponent(mp3Name));
       fd.append('data', url);
       xhr.open('POST', 'upload.php', true);

@@ -185,9 +185,7 @@
         var buffer = new Uint8Array(arrayBuffer),
         data = parseWav(buffer);
 
-        console.log(data);
-        console.log("Converting to Mp3");
-        log.innerHTML += "\n" + "Converting to Mp3";
+        __log("Converting to Mp3");
 
         encoderWorker.postMessage({ cmd: 'init', config:{
           mode : 3,
@@ -201,8 +199,7 @@
         encoderWorker.onmessage = function(e) {
           if (e.data.cmd == 'data') {
 
-            console.log("Done converting to Mp3");
-            log.innerHTML += "\n" + "Done converting to Mp3";
+            __log("Done converting to Mp3");
 
             var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
             window[self.callback](mp3Blob);
@@ -256,26 +253,6 @@
         f32Buffer[i] = value / 0x8000;
       }
       return f32Buffer;
-    }
-
-    function uploadAudio(mp3Data){
-      var reader = new FileReader();
-      reader.onload = function(event){
-        var fd = new FormData();
-        var mp3Name = encodeURIComponent('audio_recording_' + new Date().getTime() + '.mp3');
-        var xhr = new XMLHttpRequest();
-        console.log("mp3name = " + mp3Name);
-        fd.append('fname', mp3Name);
-        fd.append('data', event.target.result);
-        xhr.open('POST', 'upload.php', true);
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == 4) {
-            __log("MP3 Uploaded.");
-          }
-        };
-        xhr.send(fd);
-      };
-      reader.readAsDataURL(mp3Data);
     }
 
     source.connect(this.analyser);
