@@ -149,7 +149,7 @@
         self.convertToMP3();
       } else {
         // Assume WAV.
-        window[self.callback](self.audioData);
+        window[self.callback](self, self.audioData);
       }
     }
 
@@ -202,7 +202,7 @@
             __log("Done converting to Mp3");
 
             var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
-            window[self.callback](mp3Blob);
+            window[self.callback](self, mp3Blob);
 
           }
         };

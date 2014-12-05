@@ -26,7 +26,7 @@
   <pre id="log"></pre>
 
   <script>
-  function uploadAudio(mp3Data){
+  function uploadAudio(recorder, mp3Data){
     var reader = new FileReader();
     reader.onload = function(event){
       var fd = new FormData();
@@ -62,7 +62,7 @@
     reader.readAsDataURL(mp3Data);
 
   }
-  function logToConsole(data) {
+  function logToConsole(recorder, data) {
     console.log(data);
   }
   </script>
