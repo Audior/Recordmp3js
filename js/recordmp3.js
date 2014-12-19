@@ -1,7 +1,12 @@
 (function(global){
 
   var WORKER_PATH = 'js/recorderWorker.js';
-  var encoderWorker = new Worker('js/mp3Worker.js');
+  var encoderWorker;
+  try {
+    encoderWorker = new Worker('js/mp3Worker.js');
+  } catch (e) {
+    console.warn("Web workers are not defined, recording will not work.", e);
+  }
   var audio_context, source;
 
   var __log = function(e, data) {
