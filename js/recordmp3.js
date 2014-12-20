@@ -1,4 +1,4 @@
-(function(global){
+(function(global) {
 
   var WORKER_PATH = 'js/recorderWorker.js';
   var encoderWorker;
@@ -13,7 +13,7 @@
     log.innerHTML += "\n" + e + " " + (data || '');
   };
 
-  var Recorder = function(cfg){
+  var Recorder = function(cfg) {
     var config = cfg || {};
     var bufferLen = config.bufferLen || 4096;
     var self = this;
@@ -31,8 +31,8 @@
     this.audioData = null;
     this.context = source.context;
     this.node = (this.context.createScriptProcessor ||
-           this.context.createJavaScriptNode).call(this.context,
-                               bufferLen, 2, 2);
+      this.context.createJavaScriptNode).call(this.context,
+      bufferLen, 2, 2);
     this.analyser = this.context.createAnalyser();
     this.analyser.smoothingTimeConstant = 0.3;
     this.analyser.fftSize = 1024;
@@ -42,13 +42,13 @@
     worker.postMessage({
       command: 'init',
       config: {
-      sampleRate: this.context.sampleRate
+        sampleRate: this.context.sampleRate
       }
     });
     var recording = false,
       currCallback;
 
-    this.node.onaudioprocess = function(e){
+    this.node.onaudioprocess = function(e) {
       if (!recording) return;
 
       worker.postMessage({
@@ -59,22 +59,22 @@
       });
 
       // VU Meter.
-      var array =  new Uint8Array(self.analyser.frequencyBinCount);
+      var array = new Uint8Array(self.analyser.frequencyBinCount);
       self.analyser.getByteFrequencyData(array);
       var values = 0;
 
       var length = array.length;
       for (var i = 0; i < length; i++) {
-          values += array[i];
+        values += array[i];
       }
 
       var average = values / length;
-      self.vumeter.style.width = Math.min(parseInt(average*2),100)+'%';
+      self.vumeter.style.width = Math.min(parseInt(average * 2), 100) + '%';
     };
 
-    this.configure = function(cfg){
-      for (var prop in cfg){
-        if (cfg.hasOwnProperty(prop)){
+    this.configure = function(cfg) {
+      for (var prop in cfg) {
+        if (cfg.hasOwnProperty(prop)) {
           config[prop] = cfg[prop];
         }
       }
@@ -92,7 +92,7 @@
       __log('Recording...');
     };
 
-    this.record = function(){
+    this.record = function() {
       recording = true;
     };
 
@@ -118,7 +118,7 @@
       btnSave.disabled = false;
     };
 
-    this.stopRecording = function(){
+    this.stopRecording = function() {
       recording = false;
     };
 
@@ -137,7 +137,7 @@
             self.audio = new Audio(event.target.result);
             self.play();
           };
-            reader.readAsDataURL(self.audioData);
+          reader.readAsDataURL(self.audioData);
         } else {
           self.audio.play();
           self.playing = true;
@@ -149,7 +149,7 @@
       }
     };
 
-    this.save = function(){
+    this.save = function() {
       btnPlay.disabled = true;
       btnStop.disabled = true;
       btnRecord.disabled = true;
@@ -163,8 +163,10 @@
       }
     };
 
-    this.clear = function(){
-      worker.postMessage({ command: 'clear' });
+    this.clear = function() {
+      worker.postMessage({
+        command: 'clear'
+      });
       initButtons();
       removeClass(config.element, 'recording');
       removeClass(config.element, 'processing');
@@ -172,18 +174,20 @@
 
     this.getBuffer = function(cb) {
       currCallback = cb || config.callback;
-      worker.postMessage({ command: 'getBuffer' });
-    };
-
-    this.exportWAV = function(type){
-      type = type || config.type || 'audio/wav';
       worker.postMessage({
-      command: 'exportWAV',
-      type: type
+        command: 'getBuffer'
       });
     };
 
-    worker.onmessage = function(e){
+    this.exportWAV = function(type) {
+      type = type || config.type || 'audio/wav';
+      worker.postMessage({
+        command: 'exportWAV',
+        type: type
+      });
+    };
+
+    worker.onmessage = function(e) {
       var blob = e.data;
       self.audioData = blob;
       btnPlay.disabled = false;
@@ -193,28 +197,38 @@
       var arrayBuffer;
       var fileReader = new FileReader();
 
-      fileReader.onload = function(){
+      fileReader.onload = function() {
         arrayBuffer = this.result;
         var buffer = new Uint8Array(arrayBuffer),
-        data = parseWav(buffer);
+          data = parseWav(buffer);
 
         __log("Converting to Mp3");
 
-        encoderWorker.postMessage({ cmd: 'init', config:{
-          mode : 3,
-          channels:1,
-          samplerate: data.sampleRate,
-          bitrate: data.bitsPerSample
-        }});
+        encoderWorker.postMessage({
+          cmd: 'init',
+          config: {
+            mode: 3,
+            channels: 1,
+            samplerate: data.sampleRate,
+            bitrate: data.bitsPerSample
+          }
+        });
 
-        encoderWorker.postMessage({ cmd: 'encode', buf: Uint8ArrayToFloat32Array(data.samples) });
-        encoderWorker.postMessage({ cmd: 'finish'});
+        encoderWorker.postMessage({
+          cmd: 'encode',
+          buf: Uint8ArrayToFloat32Array(data.samples)
+        });
+        encoderWorker.postMessage({
+          cmd: 'finish'
+        });
         encoderWorker.onmessage = function(e) {
           if (e.data.cmd == 'data') {
 
             __log("Done converting to Mp3");
 
-            var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
+            var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {
+              type: 'audio/mp3'
+            });
             global[self.callback](self, mp3Blob);
 
           }
@@ -227,17 +241,17 @@
 
     var encode64 = function(buffer) {
       var binary = '',
-        bytes = new Uint8Array( buffer ),
+        bytes = new Uint8Array(buffer),
         len = bytes.byteLength;
 
       for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode( bytes[ i ] );
+        binary += String.fromCharCode(bytes[i]);
       }
-      return global.btoa( binary );
+      return global.btoa(binary);
     };
 
     var parseWav = function(wav) {
-      var readInt= function(i, bytes) {
+      var readInt = function(i, bytes) {
         var ret = 0,
           shft = 0;
 
@@ -258,18 +272,18 @@
       };
     };
 
-    var Uint8ArrayToFloat32Array= function(u8a){
+    var Uint8ArrayToFloat32Array = function(u8a) {
       var f32Buffer = new Float32Array(u8a.length);
       for (var i = 0; i < u8a.length; i++) {
-        var value = u8a[i<<1] + (u8a[(i<<1)+1]<<8);
+        var value = u8a[i << 1] + (u8a[(i << 1) + 1] << 8);
         if (value >= 0x8000) value |= ~0x7FFF;
         f32Buffer[i] = value / 0x8000;
       }
       return f32Buffer;
     };
 
-    var removeClass= function(el, name) {
-      el.className = el.className.replace(' '+name, '');
+    var removeClass = function(el, name) {
+      el.className = el.className.replace(' ' + name, '');
     };
 
     var buildInterface = function() {
@@ -282,7 +296,7 @@
       self.vumeter = config.element.querySelector('.btn-record .vumeter');
       __log('Interface built.');
     };
-    var initButtons =function() {
+    var initButtons = function() {
       btnRecord.onclick = self.toggleRecording;
       btnRecord.className = 'btn-record';
       btnRecord.innerHTML = '<span class="vumeter"></span><span class="icon-record"></span>';
@@ -317,10 +331,10 @@
     try {
       // webkit shim
       global.AudioContext = global.AudioContext || global.webkitAudioContext;
-      navigator.getUserMedia = ( navigator.getUserMedia ||
-          navigator.webkitGetUserMedia ||
-          navigator.mozGetUserMedia ||
-          navigator.msGetUserMedia);
+      navigator.getUserMedia = (navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia);
       global.URL = global.URL || global.webkitURL;
 
       audio_context = new AudioContext();
@@ -330,7 +344,9 @@
       alert('No web audio support in this browser!');
     }
 
-    navigator.getUserMedia({audio: true}, startUserMedia, function(e) {
+    navigator.getUserMedia({
+      audio: true
+    }, startUserMedia, function(e) {
       __log('No live audio input: ' + e);
     });
   };
@@ -338,11 +354,13 @@
   var startUserMedia = function(stream) {
     var recorders = document.querySelectorAll('.RecordMP3js-recorder');
     source = audio_context.createMediaStreamSource(stream);
-    __log('Media stream created.' );
-    __log("input sample rate " +source.context.sampleRate);
+    __log('Media stream created.');
+    __log("input sample rate " + source.context.sampleRate);
 
-    for(var i=0; i<recorders.length; i++) {
-      recorders[i].recorder = new Recorder({element: recorders[i]});
+    for (var i = 0; i < recorders.length; i++) {
+      recorders[i].recorder = new Recorder({
+        element: recorders[i]
+      });
     }
   };
 
