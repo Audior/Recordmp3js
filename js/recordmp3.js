@@ -2,7 +2,7 @@
 
   var WORKER_PATH;
   var encoderWorker;
-
+  
   var initWorker = function() {
     WORKER_PATH = WORKER_PATH || global.workerPath + 'js/recorderWorker.js';
     try {
@@ -14,7 +14,13 @@
   var audio_context, source;
 
   var __log = function(e, data) {
-    log.innerHTML += "\n" + e + " " + (data || '');
+    var log = document.querySelector("#log");
+    if (log && log.length > 0) {
+      log = log[0];
+      log.innerHTML += "\n" + e + " " + (data || '');
+    } else {
+      console.log(e, data);
+    }
   };
 
   var Recorder = function(cfg) {
