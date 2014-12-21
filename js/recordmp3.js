@@ -1,11 +1,15 @@
 (function(global) {
 
-  var WORKER_PATH = 'js/recorderWorker.js';
+  var WORKER_PATH;
   var encoderWorker;
-  try {
-    encoderWorker = new Worker('js/mp3Worker.js');
-  } catch (e) {
-    console.warn("Web workers are not defined, recording will not work.", e);
+
+  var initWorker = function() {
+    WORKER_PATH = WORKER_PATH || global.workerPath + 'js/recorderWorker.js';
+    try {
+      encoderWorker = encoderWorker || new Worker(global.workerPath + 'js/mp3Worker.js');
+    } catch (e) {
+      console.warn("Web workers are not defined, recording will not work.", e);
+    }
   }
   var audio_context, source;
 
@@ -14,6 +18,7 @@
   };
 
   var Recorder = function(cfg) {
+    initWorker();
     var config = cfg || {};
     var bufferLen = config.bufferLen || 4096;
     var self = this;
