@@ -30,10 +30,15 @@
       __log('No element specified.  Cannot initialise recorder.');
       return;
     }
+    this.element = config.element;
     this.vumeter = null;
     this.outputFormat = config.format || config.element.getAttribute('data-format') || 'wav';
     this.callback = config.callback || config.element.getAttribute('data-callback') || 'console.log';
     this.audioData = null;
+
+    audio_context = global.audio_context;
+    source = global.audio_source;
+
     this.context = source.context;
     this.node = (this.context.createScriptProcessor ||
       this.context.createJavaScriptNode).call(this.context,
@@ -164,7 +169,7 @@
         self.convertToMP3();
       } else {
         // Assume WAV.
-        global[self.callback](self, self.audioData);
+        global[self.callback](self, self.audioData, config.element);
       }
     };
 
@@ -234,7 +239,7 @@
             var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {
               type: 'audio/mp3'
             });
-            global[self.callback](self, mp3Blob);
+            global[self.callback](self, mp3Blob, config.element);
 
           }
         };
@@ -333,6 +338,10 @@
   global.Recorder = Recorder;
 
   var initRecorder = function() {
+    if (global.audio_context) {
+      console.log("audio_context already ready");
+      return;
+    }
     try {
       // webkit shim
       global.AudioContext = global.AudioContext || global.webkitAudioContext;
@@ -342,7 +351,7 @@
         navigator.msGetUserMedia);
       global.URL = global.URL || global.webkitURL;
 
-      audio_context = new AudioContext();
+      audio_context = global.audio_context = new global.AudioContext();
       __log('Audio context set up.');
       __log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
     } catch (e) {
@@ -357,11 +366,15 @@
   };
 
   var startUserMedia = function(stream) {
-    var recorders = document.querySelectorAll('.RecordMP3js-recorder');
-    source = audio_context.createMediaStreamSource(stream);
+    if (globa.audio_source) {
+      console.log("source already ready");
+      return;
+    }
+    source = global.audio_source = audio_context.createMediaStreamSource(stream);
     __log('Media stream created.');
     __log("input sample rate " + source.context.sampleRate);
 
+    var recorders = document.querySelectorAll('.RecordMP3js-recorder');
     for (var i = 0; i < recorders.length; i++) {
       recorders[i].recorder = new Recorder({
         element: recorders[i]
@@ -373,6 +386,8 @@
     global.addEventListener('load', initRecorder, false);
   } else if (global.attachEvent) {
     global.attachEvent('onload', initRecorder);
+  } else {
+    global.initRecorder = initRecorder;
   }
 
 })(exports || window);
