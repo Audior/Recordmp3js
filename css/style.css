@@ -9,7 +9,7 @@
   font-style: normal;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+.RecordMP3js-recorder [class^="icon-"], [class*=" icon-"] {
   font-family: 'icomoon';
   speak: none;
   font-style: normal;
@@ -23,19 +23,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-upload:before {
+.RecordMP3js-recorder .icon-upload:before {
   content: "\e600";
 }
-.icon-play:before {
+.RecordMP3js-recorder .icon-play:before {
   content: "\e601";
 }
-.icon-pause:before {
+.RecordMP3js-recorder .icon-pause:before {
   content: "\e602";
 }
-.icon-record:before {
+.RecordMP3js-recorder .icon-record:before {
   content: "\e603";
 }
-.icon-stop:before {
+.RecordMP3js-recorder .icon-stop:before {
   content: "\e604";
 }
 
