@@ -118,7 +118,7 @@
         self.audio.currentTime = 0;
         self.playing = false;
         btnPlay.className = 'btn-play';
-        btnPlay.innerHTML = '<span class="icon-play"></span>';
+        btnPlay.innerHTML = '<span class="recorder-icon-play"></span>';
       } else {
         self.stopRecording();
         removeClass(config.element, 'recording');
@@ -145,7 +145,7 @@
         btnStop.disabled = true;
         btnRecord.disabled = false;
         btnPlay.className = 'btn-play';
-        btnPlay.innerHTML = '<span class="icon-play"></span>';
+        btnPlay.innerHTML = '<span class="recorder-icon-play"></span>';
       } else {
         if (self.audio === null) {
           var reader = new FileReader();
@@ -160,7 +160,7 @@
           btnStop.disabled = false;
           btnRecord.disabled = true;
           btnPlay.className = 'btn-pause';
-          btnPlay.innerHTML = '<span class="icon-pause"></span>';
+          btnPlay.innerHTML = '<span class="recorder-icon-pause"></span>';
         }
       }
     };
@@ -315,19 +315,19 @@
     var initButtons = function() {
       btnRecord.onclick = self.toggleRecording;
       btnRecord.className = 'btn-record';
-      btnRecord.innerHTML = '<span class="vumeter"></span><span class="icon-record"></span>';
+      btnRecord.innerHTML = '<span class="vumeter"></span><span class="recorder-icon-record"></span>';
       btnRecord.disabled = false;
       btnStop.onclick = self.stop;
       btnStop.className = 'btn-stop';
-      btnStop.innerHTML = '<span class="icon-stop"></span>';
+      btnStop.innerHTML = '<span class="recorder-icon-stop"></span>';
       btnStop.disabled = true;
       btnPlay.onclick = self.play;
       btnPlay.className = 'btn-play';
-      btnPlay.innerHTML = '<span class="icon-play"></span>';
+      btnPlay.innerHTML = '<span class="recorder-icon-play"></span>';
       btnPlay.disabled = true;
       btnSave.onclick = self.save;
       btnSave.className = 'btn-save';
-      btnSave.innerHTML = '<span class="icon-upload"></span>';
+      btnSave.innerHTML = '<span class="recorder-icon-upload"></span>';
       btnSave.disabled = true;
     };
 
@@ -372,7 +372,7 @@
   };
 
   var startUserMedia = function(stream) {
-    if (globa.audio_source) {
+    if (global.audio_source) {
       console.log("source already ready");
       return;
     }

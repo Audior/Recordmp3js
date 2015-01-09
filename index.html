@@ -10,6 +10,7 @@
     ul { list-style: none; }
     #recordingslist audio { display: block; margin-bottom: 10px; }
   </style>
+  <link rel="stylesheet" href="bower_components/fontawesome/css/font-awesome.css" />
   <link href="css/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -67,6 +68,10 @@
     console.log(data);
     recorder.clear();
   }
+  </script>
+  <script>
+    window.exports = window;
+    window.exports.workerPath = "";
   </script>
   <script src="js/recordmp3.js"></script>
 </body>

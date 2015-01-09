@@ -1,16 +1,5 @@
-@font-face {
-  font-family: 'icomoon';
-  src:url('fonts/icomoon.eot?-n6wbo0');
-  src:url('fonts/icomoon.eot?#iefix-n6wbo0') format('embedded-opentype'),
-    url('fonts/icomoon.woff?-n6wbo0') format('woff'),
-    url('fonts/icomoon.ttf?-n6wbo0') format('truetype'),
-    url('fonts/icomoon.svg?-n6wbo0#icomoon') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-
-.RecordMP3js-recorder [class^="icon-"], [class*=" icon-"] {
-  font-family: 'icomoon';
+.RecordMP3js-recorder [class^="recorder-icon-"], [class*=" recorder-icon-"] {
+  font-family: 'FontAwesome';
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -22,21 +11,20 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-.RecordMP3js-recorder .icon-upload:before {
-  content: "\e600";
+.RecordMP3js-recorder .recorder-icon-upload:before {
+  content: "\f01b";
 }
-.RecordMP3js-recorder .icon-play:before {
-  content: "\e601";
+.RecordMP3js-recorder .recorder-icon-play:before {
+  content: "\f01d";
 }
-.RecordMP3js-recorder .icon-pause:before {
-  content: "\e602";
+.RecordMP3js-recorder .recorder-icon-pause:before {
+  content: "\f04c";
 }
-.RecordMP3js-recorder .icon-record:before {
-  content: "\e603";
+.RecordMP3js-recorder .recorder-icon-record:before {
+  content: "\f111";
 }
-.RecordMP3js-recorder .icon-stop:before {
-  content: "\e604";
+.RecordMP3js-recorder .recorder-icon-stop:before {
+  content: "\f04d";
 }
 
 .RecordMP3js-recorder {
@@ -89,7 +77,7 @@
   background-color:#5BC539;
   transition:width 0.08s linear;
 }
-.RecordMP3js-recorder.recording button.btn-record .icon-record {
+.RecordMP3js-recorder.recording button.btn-record .recorder-icon-record {
   opacity:0.99;
 }
 
