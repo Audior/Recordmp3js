@@ -6,15 +6,17 @@
   var Recorder = function(source, cfg){
     var config = cfg || {};
     var bufferLen = config.bufferLen || 4096;
+    var numChannels = config.numChannels || 2;
     this.context = source.context;
     this.node = (this.context.createScriptProcessor ||
                  this.context.createJavaScriptNode).call(this.context,
-                                                         bufferLen, 2, 2);
+                 bufferLen, numChannels, numChannels);
     var worker = new Worker(config.workerPath || WORKER_PATH);
     worker.postMessage({
       command: 'init',
       config: {
-        sampleRate: this.context.sampleRate
+        sampleRate: this.context.sampleRate,
+        numChannels: numChannels
       }
     });
     var recording = false,
@@ -22,12 +24,13 @@
 
     this.node.onaudioprocess = function(e){
       if (!recording) return;
+      var buffer = [];
+      for (var channel = 0; channel < numChannels; channel++){
+          buffer.push(e.inputBuffer.getChannelData(channel));
+      }
       worker.postMessage({
         command: 'record',
-        buffer: [
-          e.inputBuffer.getChannelData(0),
-          //e.inputBuffer.getChannelData(1)
-        ]
+        buffer: buffer
       });
     }
 
@@ -65,20 +68,20 @@
         type: type
       });
     }
-	
+
 	//Mp3 conversion
     worker.onmessage = function(e){
       var blob = e.data;
 	  //console.log("the blob " +  blob + " " + blob.size + " " + blob.type);
-	  
+
 	  var arrayBuffer;
 	  var fileReader = new FileReader();
-	  
+
 	  fileReader.onload = function(){
 		arrayBuffer = this.result;
 		var buffer = new Uint8Array(arrayBuffer),
         data = parseWav(buffer);
-        
+
         console.log(data);
 		console.log("Converting to Mp3");
 		log.innerHTML += "\n" + "Converting to Mp3";
@@ -94,24 +97,24 @@
         encoderWorker.postMessage({ cmd: 'finish'});
         encoderWorker.onmessage = function(e) {
             if (e.data.cmd == 'data') {
-			
+
 				console.log("Done converting to Mp3");
 				log.innerHTML += "\n" + "Done converting to Mp3";
-				
+
 				/*var audio = new Audio();
 				audio.src = 'data:audio/mp3;base64,'+encode64(e.data.buf);
 				audio.play();*/
-                
+
 				//console.log ("The Mp3 data " + e.data.buf);
-				
+
 				var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
 				uploadAudio(mp3Blob);
-				
+
 				var url = 'data:audio/mp3;base64,'+encode64(e.data.buf);
 				var li = document.createElement('li');
 				var au = document.createElement('audio');
 				var hf = document.createElement('a');
-				  
+
 				au.controls = true;
 				au.src = url;
 				hf.href = url;
@@ -120,17 +123,17 @@
 				li.appendChild(au);
 				li.appendChild(hf);
 				recordingslist.appendChild(li);
-				
+
             }
         };
 	  };
-	  
+
 	  fileReader.readAsArrayBuffer(blob);
-	  
+
       currCallback(blob);
     }
-	
-	
+
+
 	function encode64(buffer) {
 		var binary = '',
 			bytes = new Uint8Array( buffer ),
@@ -173,7 +176,7 @@
 		}
 		return f32Buffer;
 	}
-	
+
 	function uploadAudio(mp3Data){
 		var reader = new FileReader();
 		reader.onload = function(event){
@@ -192,14 +195,14 @@
 				//console.log(data);
 				log.innerHTML += "\n" + data;
 			});
-		};      
+		};
 		reader.readAsDataURL(mp3Data);
 	}
-	
+
     source.connect(this.node);
     this.node.connect(this.context.destination);    //this should not be necessary
   };
-  
+
   /*Recorder.forceDownload = function(blob, filename){
 	console.log("Force download");
     var url = (window.URL || window.webkitURL).createObjectURL(blob);
