@@ -178,9 +178,6 @@
 		var reader = new FileReader();
 		reader.onload = function(event){
 			var fd = new FormData();
-			var mp3Name = encodeURIComponent('audio_recording_' + new Date().getTime() + '.mp3');
-			console.log("mp3name = " + mp3Name);
-			fd.append('fname', mp3Name);
 			fd.append('data', event.target.result);
 			$.ajax({
 				type: 'POST',
