@@ -1,2 +1,121 @@
-@import '//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css';
-@import '//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css';
+.RecordMP3js-recorder [class^="recorder-icon-"], [class*=" recorder-icon-"] {
+  font-family: 'FontAwesome';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.RecordMP3js-recorder .recorder-icon-upload:before {
+  content: "\f01b";
+}
+.RecordMP3js-recorder .recorder-icon-play:before {
+  content: "\f01d";
+}
+.RecordMP3js-recorder .recorder-icon-pause:before {
+  content: "\f04c";
+}
+.RecordMP3js-recorder .recorder-icon-record:before {
+  content: "\f111";
+}
+.RecordMP3js-recorder .recorder-icon-stop:before {
+  content: "\f04d";
+}
+
+.RecordMP3js-recorder {
+  width:200px;
+  height:24px;
+  display:inline-block;
+  margin:5px 10px;
+}
+.RecordMP3js-recorder button {
+  color:#666;
+  margin:0;
+  width:25%;
+  height:24px;
+  background:none #eee;
+  border:1px solid #999;
+  border-left-width:0;
+  position:relative;
+}
+.RecordMP3js-recorder button > span {
+  line-height:1.5em;
+}
+.RecordMP3js-recorder button:first-child {
+  border-left-width:1px;
+  border-radius:5px 0 0 5px;
+}
+.RecordMP3js-recorder button:last-child {
+  border-radius:0 5px 5px 0;
+}
+.RecordMP3js-recorder button:disabled {
+  color:#999;
+  background-color:#ddd;
+}
+
+/* Record button + VU Meter */
+.RecordMP3js-recorder button.btn-record {
+  color:#D00;
+}
+.RecordMP3js-recorder button.btn-record:disabled {
+  color:#D66;
+}
+.RecordMP3js-recorder.recording button.btn-record {
+  color:#B00;
+}
+.RecordMP3js-recorder.recording button.btn-record .vumeter {
+  position:absolute;
+  display:block;
+  top:0;
+  left:0;
+  height:100%;
+  background-color:#5BC539;
+  transition:width 0.08s linear;
+}
+.RecordMP3js-recorder.recording button.btn-record .recorder-icon-record {
+  opacity:0.99;
+}
+
+/* Loading spinner for "Processing" state */
+.RecordMP3js-recorder.processing button.btn-save span:before {
+  visibility:hidden;
+}
+.RecordMP3js-recorder.processing button.btn-save:before {
+  display:block;
+  content:"";
+  position:absolute;
+  width:16px;
+  height:16px;
+  top:3px;
+  left:17px;
+  border-radius:50%;
+  border:3px solid #ccc;
+  border-top-color:#999;
+  -webkit-animation:RecordMP3js-spinner 1s infinite linear;
+  animation:RecordMP3js-spinner 1s infinite linear;
+}
+@-webkit-keyframes RecordMP3js-spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes RecordMP3js-spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}

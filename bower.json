@@ -1,0 +1,27 @@
+{
+  "name": "recordmp3js",
+  "version": "0.5.0",
+  "homepage": "https://github.com/nusofthq/Recordmp3js",
+  "authors": [
+    "nusofthq <contact@nusofthq.com>",
+    "Paul Nicholls <paul.nicholls@canterbury.ac.nz>"
+  ],
+  "description": "Record MP3 files directly from the browser using JS and HTML",
+  "main": "js/recordmp3.js",
+  "keywords": [
+    "audio"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "upload.php"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.1",
+    "fontawesome": "~4.2.0"
+  }
+}
