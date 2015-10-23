@@ -3,7 +3,7 @@ Recordmp3js
 
 Record MP3 files directly from the browser using JS and HTML
 
-For the article explaining how Recordmp3js see 
+For an explanation on how it works check out the initial article: 
 http://audior.ec/blog/recording-mp3-using-only-html5-and-javascript-recordmp3-js/
 
 License
