@@ -30,8 +30,11 @@
 
   var audio_context;
   var recorder;
+  var localStream;
 
   function startUserMedia(stream) {
+    // prevent firefox garbage collector to remove the stream
+    localStream = stream;
     var input = audio_context.createMediaStreamSource(stream);
     __log('Media stream created.' );
 	__log("input sample rate " +input.context.sampleRate);
