@@ -60,7 +60,7 @@
     // create WAV download link using audio data blob
     createDownloadLink();
 
-    recorder.clear();
+    recorder && recorder.clear();
   }
 
   function createDownloadLink() {
