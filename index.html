@@ -3,12 +3,10 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Live input record and playback</title>
-  <style type='text/css'>
-    ul { list-style: none; }
-    #recordingslist audio { display: block; margin-bottom: 10px; }
-  </style>
-   <link href="css/style.css" rel="stylesheet" type="text/css" />
+  <title>Live input record and playback</title>
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+  <link href="css/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
@@ -62,7 +60,7 @@
     // create WAV download link using audio data blob
     createDownloadLink();
 
-    recorder.clear();
+    recorder && recorder.clear();
   }
 
   function createDownloadLink() {
@@ -106,7 +104,6 @@
   };
   </script>
 
-   <script src="js/jquery-1.11.0.min.js"></script>
   <script src="recordmp3.js"></script>
 </body>
 </html>

@@ -1,2 +1,7 @@
-@import '//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css';
-@import '//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css';
+ul {
+	list-style: none;
+}
+
+#recordingslist audio {
+	display: block; margin-bottom: 10px;
+}
